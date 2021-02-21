@@ -7,16 +7,8 @@ axiosRetry(axios, {
     retryDelay: axiosRetry.exponentialDelay
 })
 
-if (!process.env.GITHUB_PERSONAL_ACCESS_TOKEN) {
-    throw Error('OctoBay Adapters: No GitHub access token set. (GITHUB_PERSONAL_ACCESS_TOKEN) ')
-}
-
-const headers = {
-    Authorization: 'bearer ' + process.env.GITHUB_PERSONAL_ACCESS_TOKEN
-}
-
 // recursive function to fetch all events where the issue was closed
-const getIssueClosedEvents = (issueId, after = null, result = { closedEvents: [], body: '' }) => {
+const getIssueClosedEvents = (accessToken, issueId, after = null, result = { closedEvents: [], body: '' }) => {
     return axios.post(graphqlUrl, {
         query: `query {
             rateLimit {
@@ -49,12 +41,14 @@ const getIssueClosedEvents = (issueId, after = null, result = { closedEvents: []
             }
         }`
     }, {
-        headers
+        headers: {
+            Authorization: 'bearer ' + accessToken
+        }
     }).then(res => {
         result.body = res.data.data.node.body
         result.closedEvents.push(...res.data.data.node.timelineItems.nodes)
         if (res.data.data.node.timelineItems.pageInfo.hasNextPage) {
-            return getIssueClosedEvents(issueId, res.data.data.node.timelineItems.pageInfo.endCursor, result)
+            return getIssueClosedEvents(accessToken, issueId, res.data.data.node.timelineItems.pageInfo.endCursor, result)
         } else {
             return result
         }
@@ -63,8 +57,16 @@ const getIssueClosedEvents = (issueId, after = null, result = { closedEvents: []
     })
   }
 
-module.exports = (githubUser, issueId) => {
-    return getIssueClosedEvents(issueId).then(result => {
+module.exports = (githubUser, issueId, accessToken = '') => {
+    if (!accessToken) {
+        if (!process.env.GITHUB_PERSONAL_ACCESS_TOKEN) {
+            throw Error('OctoBay Adapters: No GitHub access token set. (GITHUB_PERSONAL_ACCESS_TOKEN) ')
+        } else {
+            accessToken = process.env.GITHUB_PERSONAL_ACCESS_TOKEN
+        }
+    }
+
+    return getIssueClosedEvents(accessToken, issueId).then(result => {
         let releasedByPullRequest = false
         result.closedEvents.forEach(closedEvent => {
           if (closedEvent.closer && closedEvent.closer.author.login === githubUser) {
