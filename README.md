@@ -6,20 +6,39 @@ These adapters are used in our [Chainlink external adapters](https://github.com/
 
 The adapters expect some auth parameters to be set in `process.env`.
 
-## Claim
+## GitHub Access Token
+
+Exchange a GitHub auth code for an access token.
+
+```javascript
+// Requires:
+// - process.env.GITHUB_CLIENT_ID
+// - process.env.GITHUB_CLIENT_SECRET
+
+const { githubAccessToken } = require('@octobay/adapters')
+
+githubAccessToken(code).then(result => {
+    // result: {
+    //   error: null|string
+    //   accessToken: null|string
+    // }
+}).catch(error => ...)
+```
+
+## Bounty Is Released
+
+Check if an issue is released to a user, either by a matching and merged pull request or by a comment from the maintainer.
 
 ```javascript
 // Requires:
 // - process.env.GITHUB_PERSONAL_ACCESS_TOKEN
 
-const { claimAdapter } = require('@octobay/adapters')
+const { bountyIsReleased } = require('@octobay/adapters')
 
-claimAdapter(githubUser, issueId).then(result => {
+bountyIsReleased(githubUser, issueId).then(result => {
     // result: {
     //   releasedByCommand: bool
     //   releasedByPullRequest: bool
     // }
-}).catch(error => {
-    // console.log(error)
-})
+}).catch(error => ...)
 ```
