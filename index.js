@@ -1,4 +1,5 @@
 module.exports = {
     githubAccessToken: require('./githubAccessToken'),
-    bountyIsReleased: require('./bountyIsReleased')
+    bountyIsReleased: require('./bountyIsReleased'),
+    addressRepoExists: require('./addressRepoExists')
 }
