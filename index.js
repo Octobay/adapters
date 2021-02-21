@@ -1,5 +1,5 @@
-const claimAdapter = require('./claim')
+const bountyIsReleased = require('./bounty/isReleased')
 
 module.exports = {
-    claimAdapter
+    bountyIsReleased
 }
