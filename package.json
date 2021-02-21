@@ -1,5 +1,5 @@
 {
-  "name": "adapters",
+  "name": "@octobay/adapters",
   "version": "0.0.1",
   "description": "Octobay adapters",
   "main": "index.js",
