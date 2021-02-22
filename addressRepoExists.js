@@ -14,7 +14,7 @@ module.exports = (githubUser, ethAddress, accessToken = '') => {
 
     return axios.post(graphqlUrl, {
         query: `query($githubUser:String!, $ethAddress:String!) {
-            repository(owner: "$githubUser", name: "$ethAddress") {
+            repository(owner: $githubUser, name: $ethAddress) {
               name
             }
         }`,
