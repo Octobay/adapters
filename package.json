@@ -1,6 +1,6 @@
 {
   "name": "@octobay/adapters",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "Octobay adapters",
   "main": "index.js",
   "scripts": {
