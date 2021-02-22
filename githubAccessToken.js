@@ -19,17 +19,10 @@ module.exports = (code, githubClientId = '', githubClientSecret = '') => {
         accept: 'application/json'
     }).then(res => {
         const data = new URLSearchParams(res.data)
-      if (data.get('error')) {
-        return {
-            error: `${data.get('error')}: ${data.get('error_description')}`,
-            accessToken: null
+        if (data.get('error')) {
+            throw new Error(`${data.get('error')}: ${data.get('error_description')}`)
         }
-      } else {
-        return {
-            error: null,
-            accessToken: data.get('access_token')
-        }
-      }
+        return data.get('access_token')
     }).catch(e => {
         throw e
     })
