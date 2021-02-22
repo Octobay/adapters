@@ -25,6 +25,21 @@ githubAccessToken(code).then(result => {
 }).catch(error => ...)
 ```
 
+## Address Repository Exists
+
+Check if a GitHub repository by a given user and with a given ETH address as its name, exists.
+
+```javascript
+// Requires:
+// - process.env.GITHUB_PERSONAL_ACCESS_TOKEN
+
+const { addressRepoExists } = require('@octobay/adapters')
+
+addressRepoExists(githubUser, ethAddress).then(result => {
+    // result: bool
+}).catch(error => ...)
+```
+
 ## Bounty Is Released
 
 Check if an issue is released to a user, either by a matching and merged pull request or by a comment from the maintainer.
