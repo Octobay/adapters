@@ -25,6 +25,23 @@ githubAccessToken(code).then(result => {
 }).catch(error => ...)
 ```
 
+## GitHub User
+
+Get a GitHub user's GraphQL node object.
+
+```javascript
+// Requires:
+// - process.env.GITHUB_PERSONAL_ACCESS_TOKEN
+
+const { githubUser } = require('@octobay/adapters')
+
+githubUser(username).then(user => {
+    // user: {
+    //   id: ...
+    // }
+}).catch(error => ...)
+```
+
 ## Address Repository Exists
 
 Check if a GitHub repository by a given user and with a given ETH address as its name, exists.
