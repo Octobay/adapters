@@ -8,14 +8,14 @@ axiosRetry(axios, { retries: 3, retryDelay: axiosRetry.exponentialDelay })
 // recursive function to fetch all events where the issue was closed
 const getIssueClosedEvents = (accessToken, issueId, after = null, result = { closedEvents: [], body: '' }) => {
     return axios.post(graphqlUrl, {
-        query: `query {
+        query: `query($issueId:String!) {
             rateLimit {
             limit
             cost
             remaining
             resetAt
             }
-            node(id:"${issueId}") {
+            node(id: $issueId) {
             ... on Issue {
                 body
                 timelineItems(itemTypes: [CLOSED_EVENT], first: 1${after ? ', after: "' + after + '"' : ''}) {
@@ -37,7 +37,10 @@ const getIssueClosedEvents = (accessToken, issueId, after = null, result = { clo
                 }
             }
             }
-        }`
+        }`,
+        variables: {
+            issueId
+        }
     }, {
         headers: {
             Authorization: 'bearer ' + accessToken

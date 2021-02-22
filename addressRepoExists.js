@@ -13,11 +13,15 @@ module.exports = (githubUser, ethAddress, accessToken = '') => {
     accessToken = getEnvDefault(accessToken, 'GITHUB_PERSONAL_ACCESS_TOKEN')
 
     return axios.post(graphqlUrl, {
-        query: `query {
-            repository(owner: "${githubUser}", name: "${ethAddress}") {
+        query: `query($githubUser:String!, $ethAddress:String!) {
+            repository(owner: "$githubUser", name: "$ethAddress") {
               name
             }
-          }`
+        }`,
+        variables: {
+            githubUser,
+            ethAddress
+        }
     }, {
         headers: {
             Authorization: 'bearer ' + accessToken
