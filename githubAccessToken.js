@@ -1,5 +1,6 @@
 const axios = require('axios')
 const axiosRetry = require('axios-retry')
+const { getEnvDefault } = require('./helper')
 const authUrl = 'https://github.com/login/oauth/access_token'
  
 axiosRetry(axios, {
@@ -7,14 +8,13 @@ axiosRetry(axios, {
     retryDelay: axiosRetry.exponentialDelay
 })
 
-if (!process.env.GITHUB_CLIENT_ID || !process.env.GITHUB_CLIENT_SECRET) {
-    throw Error('OctoBay Adapters: No GitHub client ID and/or secret. (GITHUB_CLIENT_ID, GITHUB_CLIENT_SECRET) ')
-}
+module.exports = (code, githubClientId = '', githubClientSecret = '') => {
+    githubClientId = getEnvDefault(githubClientId, 'GITHUB_CLIENT_ID')
+    githubClientSecret = getEnvDefault(githubClientSecret, 'GITHUB_CLIENT_SECRET')
 
-module.exports = (code) => {
     return axios.post(authUrl, {
-        client_id: process.env.GITHUB_CLIENT_ID,
-        client_secret: process.env.GITHUB_CLIENT_SECRET,
+        client_id: githubClientId,
+        client_secret: githubClientSecret,
         code,
         accept: 'application/json'
     }).then(res => {
