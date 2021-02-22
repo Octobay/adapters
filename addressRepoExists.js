@@ -26,12 +26,7 @@ module.exports = (githubUser, ethAddress, accessToken = '') => {
         headers: {
             Authorization: 'bearer ' + accessToken
         }
-    }).then(res => {
-        if (res.data.errors) {
-            throw res.data.errors
-        }
-        return true
-    }).catch(e => {
+    }).then(res => !res.data.errors && !!res.data.data.repository).catch(e => {
         throw e
     })
 }

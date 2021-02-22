@@ -30,7 +30,7 @@ module.exports = (githubUser, accessToken = '') => {
                 followers {
                     totalCount
                 }
-                organizations {
+                organizations(first: 100) {
                     nodes {
                         id
                         createdAt
