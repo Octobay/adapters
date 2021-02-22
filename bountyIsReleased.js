@@ -1,11 +1,9 @@
 const axios = require('axios')
 const axiosRetry = require('axios-retry')
+const { getEnvDefault } = require('./helper')
 const graphqlUrl = 'https://api.github.com/graphql'
  
-axiosRetry(axios, {
-    retries: 3,
-    retryDelay: axiosRetry.exponentialDelay
-})
+axiosRetry(axios, { retries: 3, retryDelay: axiosRetry.exponentialDelay })
 
 // recursive function to fetch all events where the issue was closed
 const getIssueClosedEvents = (accessToken, issueId, after = null, result = { closedEvents: [], body: '' }) => {
@@ -58,13 +56,7 @@ const getIssueClosedEvents = (accessToken, issueId, after = null, result = { clo
   }
 
 module.exports = (githubUser, issueId, accessToken = '') => {
-    if (!accessToken) {
-        if (!process.env.GITHUB_PERSONAL_ACCESS_TOKEN) {
-            throw Error('OctoBay Adapters: No GitHub access token set. (GITHUB_PERSONAL_ACCESS_TOKEN) ')
-        } else {
-            accessToken = process.env.GITHUB_PERSONAL_ACCESS_TOKEN
-        }
-    }
+    accessToken = getEnvDefault(accessToken, 'GITHUB_PERSONAL_ACCESS_TOKEN')
 
     return getIssueClosedEvents(accessToken, issueId).then(result => {
         let releasedByPullRequest = false
