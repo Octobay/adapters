@@ -8,9 +8,13 @@ axiosRetry(axios, {
 })
 
 module.exports = (githubUser, ethAddress, accessToken = '') => {
+    if (!ethAddress.startsWith('0x') || !ethAddress.length === 42) {
+        throw Error(`OctoBay Adapters: Invalid ETH address. (${ethAddress})`)
+    }
+
     if (!accessToken) {
         if (!process.env.GITHUB_PERSONAL_ACCESS_TOKEN) {
-            throw Error('OctoBay Adapters: No GitHub access token set. (GITHUB_PERSONAL_ACCESS_TOKEN) ')
+            throw Error('OctoBay Adapters: No GitHub access token set. (GITHUB_PERSONAL_ACCESS_TOKEN)')
         } else {
             accessToken = process.env.GITHUB_PERSONAL_ACCESS_TOKEN
         }
