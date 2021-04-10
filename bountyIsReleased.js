@@ -28,7 +28,7 @@ const getIssueClosedEvents = (accessToken, issueId, after = null, result = { clo
                 closer {
                   ... on PullRequest {
                     author {
-                      id
+                      login
                     }
                   }
                 }
@@ -84,7 +84,7 @@ module.exports = async (githubUserId, issueId, accessToken = '') => {
   return getIssueClosedEvents(accessToken, issueId).then(result => {
     let releasedByPullRequest = false
     result.closedEvents.forEach(closedEvent => {
-      if (closedEvent.closer && closedEvent.closer.author.id === githubUserId) {
+      if (closedEvent.closer && closedEvent.closer.author.login === githubUserNodeResponse.data.data.node.login) {
         releasedByPullRequest = true
       }
     })
