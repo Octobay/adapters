@@ -28,7 +28,7 @@ const getIssueClosedEvents = (accessToken, issueId, after = null, result = { clo
                 closer {
                   ... on PullRequest {
                     author {
-                      login
+                      id
                     }
                   }
                 }
@@ -61,18 +61,35 @@ const getIssueClosedEvents = (accessToken, issueId, after = null, result = { clo
   })
 }
 
-module.exports = (githubUser, issueId, accessToken = '') => {
+module.exports = async (githubUserId, issueId, accessToken = '') => {
   accessToken = getEnvDefault(accessToken, 'GITHUB_PERSONAL_ACCESS_TOKEN')
+
+  const githubUserNodeResponse = await axios.post(graphqlUrl, {
+    query: `query($githubUserId:ID!) {
+      node(id: $githubUserId) {
+        ... on User {
+          login
+        }
+      }
+    }`,
+    variables: {
+      githubUserId
+    }
+  }, {
+    headers: {
+      Authorization: 'bearer ' + accessToken
+    }
+  })
 
   return getIssueClosedEvents(accessToken, issueId).then(result => {
     let releasedByPullRequest = false
     result.closedEvents.forEach(closedEvent => {
-      if (closedEvent.closer && closedEvent.closer.author.login === githubUser) {
+      if (closedEvent.closer && closedEvent.closer.author.id === githubUserId) {
         releasedByPullRequest = true
       }
     })
     
-    const releaseCommandRegex = new RegExp(`^(\\s+)?@OctoBay([ ]+)release([ ]+)to([ ]+)@${githubUser}(\\s+)?$`, 'igm')
+    const releaseCommandRegex = new RegExp(`^(\\s+)?@OctoBay([ ]+)release([ ]+)to([ ]+)@${githubUserNodeResponse.data.data.node.login}(\\s+)?$`, 'igm')
     const releasedByCommand = !!result.body.match(releaseCommandRegex)
     
     return { releasedByCommand, releasedByPullRequest }
